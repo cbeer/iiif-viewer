@@ -47,7 +47,8 @@ export default class extends Component {
     stage.batchDraw();
 
     this.asyncSetState({
-      ...newPos,
+      x: -1 * newPos.x / newScale,
+      y: -1 * newPos.y / newScale,
       zoom: newScale,
       scale: newScale,
     });
