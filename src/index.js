@@ -14,14 +14,16 @@ export default class extends Component {
     };
   }
 
-  isVisible = (obj, offset = { x: 0, y: 0}) => {
-    const { dimensions, width, height } = this.props;
-    const { x, y, scale } = this.state;
+  isVisible = (offset = { x: 0, y: 0}) => {
+    return (obj) => {
+      const { dimensions, width, height } = this.props;
+      const { x, y, scale } = this.state;
 
-    return ((x + offset.x) <= obj.x2 &&
-            obj.x1 <= (x + offset.x + width) &&
-            (y + offset.y) <= obj.y2 &&
-            obj.y1 <= (y + offset.y + height));
+      return ((x + offset.x) <= obj.x2 &&
+              obj.x1 <= (x - offset.x + width) &&
+              (y + offset.y) <= obj.y2 &&
+              obj.y1 <= (y - offset.y + height));
+    }
   }
 
   handleWheel = (e) => {
@@ -80,7 +82,10 @@ export default class extends Component {
     return (
       <Stage rotation={rotation} x={-1 * x * scale} y={-1 * y * scale} scaleX={scale} scaleY={scale} onWheel={this.handleWheel} onDragEnd={this.handleDragEnd} draggable width={width} height={height}>
         <Layer>
-          <IIIFImage scale={scale} isVisible={this.isVisible} url={url} />
+          <IIIFImage scale={scale} isVisible={this.isVisible()} url={url} />
+        </Layer>
+        <Layer offsetX={-2700}>
+          <IIIFImage scale={scale} isVisible={this.isVisible({ x: 2700, y: 0 })} url={url} />
         </Layer>
       </Stage>
     );
