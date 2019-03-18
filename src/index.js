@@ -7,7 +7,6 @@ export default class extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      zoom: props.zoom || 1,
       x: props.x || 0,
       y: props.y || 0,
       scale: 0.1,
@@ -16,8 +15,6 @@ export default class extends Component {
   }
 
   handleWheel = (e) => {
-    const { zoom } = this.state;
-
     e.evt.preventDefault();
     const stage = e.currentTarget;
 
@@ -49,7 +46,6 @@ export default class extends Component {
     this.asyncSetState({
       x: -1 * newPos.x / newScale,
       y: -1 * newPos.y / newScale,
-      zoom: newScale,
       scale: newScale,
     });
   }
