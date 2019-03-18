@@ -52,7 +52,7 @@ export default class IIIFImage extends Component {
     for (var i = 0; i < Math.ceil(tileZoom * width / tileWidth); i++) {
       for (var j = 0; j < Math.ceil(tileZoom * height / tileHeight); j++) {
 
-        let actualTileWidth = tileWidth, actualTileHeight = tileHeight;
+        let actualTileWidth = tileWidth, actualTileHeight = tileHeight || tileWidth;
 
         // last in the row
         if (i === Math.floor(tileZoom * width / tileWidth)) {
