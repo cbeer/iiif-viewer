@@ -95,17 +95,6 @@ export default class IIIFImage extends Component {
     return result;
   }
 
-  fitBounds({ width, height, maxWidth, maxHeight }) {
-    const aspectRatio = width / height;
-
-    if ((maxWidth / maxHeight) < aspectRatio) {
-      return { height: maxWidth / aspectRatio, width: maxWidth };
-    } else {
-      return { height: maxHeight, width: maxHeight * aspectRatio };
-    }
-
-  }
-
   render() {
     return (
       this.tiles().map((tile) => {
