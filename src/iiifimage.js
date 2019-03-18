@@ -27,6 +27,21 @@ export default class IIIFImage extends Component {
     });
   }
 
+  bestTileWidthAndScaleFactor() {
+    const { scale } = this.props;
+    const { data: { tiles } } = this.state;
+
+    const scaleFactors = [...tiles.map(e => e.scaleFactors)]
+    const bestScaleFactor = scaleFactors.sort((a, b) => (a < b)).find(f => (1/f > scale));
+    const bestTile = tiles.find(f => f.scaleFactors.includes(bestScaleFactor)) || {};
+
+    return {
+      width: bestTile.width || 512,
+      height: bestTile.height || bestTile.width || 512,
+      zoom: 1 / (bestScaleFactor || 1)
+    };
+  }
+
   tiles() {
     const { url, scale, bounds, isVisible } = this.props;
     const { data } = this.state;
@@ -36,7 +51,6 @@ export default class IIIFImage extends Component {
     const result = [];
 
     const { width, height, tiles } = data;
-    const { width: tileWidth, height: tileHeight, scaleFactors } = data.tiles[0];
 
     result.push({
       key: 'base',
@@ -47,12 +61,12 @@ export default class IIIFImage extends Component {
       height: height,
     });
 
-    const tileZoom = 1 / ((scaleFactors || []).sort(function(a,b) { return a < b }).find((f) => { return 1/f > scale }) || 1);
+    const { zoom: tileZoom, width: tileWidth, height: tileHeight } = this.bestTileWidthAndScaleFactor();
 
     for (var i = 0; i < Math.ceil(tileZoom * width / tileWidth); i++) {
       for (var j = 0; j < Math.ceil(tileZoom * height / tileHeight); j++) {
 
-        let actualTileWidth = tileWidth, actualTileHeight = tileHeight || tileWidth;
+        let actualTileWidth = tileWidth, actualTileHeight = tileHeight;
 
         // last in the row
         if (i === Math.floor(tileZoom * width / tileWidth)) {
