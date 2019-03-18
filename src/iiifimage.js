@@ -35,7 +35,7 @@ export default class IIIFImage extends Component {
   }
 
   tiles() {
-    const { url, scale, zoom, bounds } = this.props;
+    const { url, scale, bounds } = this.props;
     const { data } = this.state;
 
     if (!data) return [];

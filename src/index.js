@@ -58,15 +58,17 @@ export default class extends Component {
   }, 500);
 
   handleDragEnd = e => {
+    const { scale } = this.state;
+
     this.setState({
-      x: e.target.x(),
-      y: e.target.y(),
+      x: -1 * e.target.x() / scale,
+      y: -1 * e.target.y() / scale,
     });
   };
 
   render() {
     const { url } = this.props;
-    const { x, y, rotation, scale, zoom } = this.state;
+    const { x, y, rotation, scale } = this.state;
 
     return (
       <Fragment>
