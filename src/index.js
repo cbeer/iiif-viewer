@@ -11,6 +11,7 @@ export default class extends Component {
       x: props.x || 0,
       y: props.y || 0,
       scale: 0.1,
+      rotation: 0,
     };
   }
 
@@ -65,11 +66,11 @@ export default class extends Component {
 
   render() {
     const { url } = this.props;
-    const { x, y, scale, zoom } = this.state;
+    const { x, y, rotation, scale, zoom } = this.state;
 
     return (
       <Fragment>
-        <Stage x={-1 * x * scale} y={-1 * y * scale} scaleX={scale} scaleY={scale} onWheel={this.handleWheel} onDragEnd={this.handleDragEnd} draggable width={window.innerWidth} height={window.innerHeight}>
+        <Stage rotation={rotation} x={-1 * x * scale} y={-1 * y * scale} scaleX={scale} scaleY={scale} onWheel={this.handleWheel} onDragEnd={this.handleDragEnd} draggable width={window.innerWidth} height={window.innerHeight}>
           <Layer>
             <IIIFImage scale={scale} bounds={{ x1: x, y1: y, x2: x + (window.innerWidth / scale), y2: y + (window.innerHeight / scale) }} url={url} />
           </Layer>
