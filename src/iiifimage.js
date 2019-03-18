@@ -13,7 +13,18 @@ export default class IIIFImage extends Component {
   constructor(props) {
     super(props);
     this.state = { data: undefined };
+  }
+
+  componentDidMount() {
     this.fetchImageApiResponse();
+  }
+
+  componentDidUpdate({ url: prevUrl }) {
+    const { url } = this.props;
+
+    if (url !== prevUrl) {
+      this.fetchImageApiResponse();
+    }
   }
 
   fetchImageApiResponse() {

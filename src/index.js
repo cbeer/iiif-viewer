@@ -64,13 +64,14 @@ export default class extends Component {
   };
 
   render() {
+    const { url } = this.props;
     const { x, y, scale, zoom } = this.state;
 
     return (
       <Fragment>
-        <Stage x={x} y={y} scaleX={scale} scaleY={scale} onWheel={this.handleWheel} onDragEnd={this.handleDragEnd} draggable width={window.innerWidth} height={window.innerHeight}>
+        <Stage x={-1 * x * scale} y={-1 * y * scale} scaleX={scale} scaleY={scale} onWheel={this.handleWheel} onDragEnd={this.handleDragEnd} draggable width={window.innerWidth} height={window.innerHeight}>
           <Layer>
-            <IIIFImage zoom={zoom} scale={scale} bounds={{ x1: -1*x / scale, y1: -1*y / scale, x2: -1*x / scale + (window.innerWidth / scale), y2: -1*y / scale + (window.innerHeight / scale) }} url="https://stacks.stanford.edu/image/iiif/bb000zn0114%252FPC0062_2008-194_Q03_02_007" />
+            <IIIFImage scale={scale} bounds={{ x1: x, y1: y, x2: x + (window.innerWidth / scale), y2: y + (window.innerHeight / scale) }} url={url} />
           </Layer>
         </Stage>
         <div style={{ position: 'absolute', right: 0, top: 0 }} >
