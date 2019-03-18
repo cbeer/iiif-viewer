@@ -14,6 +14,16 @@ export default class extends Component {
     };
   }
 
+  isVisible = (obj, offset = { x: 0, y: 0}) => {
+    const { dimensions, width, height } = this.props;
+    const { x, y, scale } = this.state;
+
+    return ((x + offset.x) <= obj.x2 &&
+            obj.x1 <= (x + offset.x + width) &&
+            (y + offset.y) <= obj.y2 &&
+            obj.y1 <= (y + offset.y + height));
+  }
+
   handleWheel = (e) => {
     e.evt.preventDefault();
     const stage = e.currentTarget;
@@ -64,22 +74,15 @@ export default class extends Component {
   };
 
   render() {
-    const { url } = this.props;
+    const { url, width, height } = this.props;
     const { x, y, rotation, scale } = this.state;
 
     return (
-      <Fragment>
-        <Stage rotation={rotation} x={-1 * x * scale} y={-1 * y * scale} scaleX={scale} scaleY={scale} onWheel={this.handleWheel} onDragEnd={this.handleDragEnd} draggable width={window.innerWidth} height={window.innerHeight}>
-          <Layer>
-            <IIIFImage scale={scale} bounds={{ x1: x, y1: y, x2: x + (window.innerWidth / scale), y2: y + (window.innerHeight / scale) }} url={url} />
-          </Layer>
-        </Stage>
-        <div style={{ position: 'absolute', right: 0, top: 0 }} >
-          <button onClick={() => { this.setState({ scale: scale * 2 })} }>zoom in</button>
-          <button onClick={() => { this.setState({ scale: scale / 2 })} }>zoom out</button>
-          <button onClick={() => { this.setState({ scale: 1 })} }>reset</button>
-        </div>
-      </Fragment>
+      <Stage rotation={rotation} x={-1 * x * scale} y={-1 * y * scale} scaleX={scale} scaleY={scale} onWheel={this.handleWheel} onDragEnd={this.handleDragEnd} draggable width={width} height={height}>
+        <Layer>
+          <IIIFImage scale={scale} isVisible={this.isVisible} url={url} />
+        </Layer>
+      </Stage>
     );
   }
 }

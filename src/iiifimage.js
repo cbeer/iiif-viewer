@@ -3,13 +3,6 @@ import axios from 'axios';
 import URLImage from './urlimage';
 
 export default class IIIFImage extends Component {
-  static intersects(a, b) {
-    return (a.x1 <= b.x2 &&
-            b.x1 <= a.x2 &&
-            a.y1 <= b.y2 &&
-            b.y1 <= a.y2);
-  }
-
   constructor(props) {
     super(props);
     this.state = { data: undefined };
@@ -35,7 +28,7 @@ export default class IIIFImage extends Component {
   }
 
   tiles() {
-    const { url, scale, bounds } = this.props;
+    const { url, scale, bounds, isVisible } = this.props;
     const { data } = this.state;
 
     if (!data) return [];
@@ -79,7 +72,7 @@ export default class IIIFImage extends Component {
 
         const tileBounds = { x1: x, y1: y, x2: x + x_width, y2: y + y_height };
 
-        if (IIIFImage.intersects(bounds, tileBounds)) {
+        if (isVisible(tileBounds)) {
           result.push({
             key: `${x},${y}`,
             src: `${url}/${x},${y},${x_width},${y_height}/${actualTileWidth},${actualTileHeight}/0/default.jpg`,

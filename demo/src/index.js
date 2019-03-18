@@ -21,7 +21,7 @@ class Demo extends Component {
         <input value={url} onChange={this.handleChange} />
       </label>
 
-      <Example url={url} />
+      <Example url={url} width={600} height={600} />
     </div>
   }
 }
