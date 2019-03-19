@@ -19,9 +19,9 @@ export default class extends Component {
       const { dimensions, width, height } = this.props;
       const { x, y, scale } = this.state;
 
-      return ((x + offset.x) <= obj.x2 &&
+      return ((x - offset.x) <= obj.x2 &&
               obj.x1 <= (x - offset.x + width / scale) &&
-              (y + offset.y) <= obj.y2 &&
+              (y - offset.y) <= obj.y2 &&
               obj.y1 <= (y - offset.y + height / scale));
     }
   }
