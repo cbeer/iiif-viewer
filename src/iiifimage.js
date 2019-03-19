@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {Component, Fragment} from 'react'
 import axios from 'axios';
 import URLImage from './urlimage';
 
@@ -35,9 +35,27 @@ export default class IIIFImage extends Component {
     const bestScaleFactor = scaleFactors.find(f => (1/f > scale));
     const bestTile = tiles.find(f => f.scaleFactors.includes(bestScaleFactor)) || {};
 
+    if (bestTile.width && bestTile.height && bestTile.width * bestTile.height > 1048576) {
+      if (this.isLevel1() || !this.supports(['sizeByWh']) || !this.supports(['sizeByDistortedWh'])) {
+        return {
+          width: Math.min(bestTile.width, bestTile.height || Number.MAX_SAFE_INTEGER),
+          height: Math.min(bestTile.width, bestTile.height || Number.MAX_SAFE_INTEGER),
+          providedHeight: !!bestTile.height,
+          zoom: 1 / (bestScaleFactor || 1)
+        }
+      } else {
+        return {
+          width: Math.min(bestTile.width, 512),
+          height: Math.min(bestTile.height, Math.min(bestTile.width, 512)),
+          zoom: 1 / (bestScaleFactor || 1)
+        }
+      }
+    }
+
     return {
       width: bestTile.width || 512,
       height: bestTile.height || bestTile.width || 512,
+      providedHeight: !!bestTile.height,
       zoom: 1 / (bestScaleFactor || 1)
     };
   }
@@ -45,8 +63,6 @@ export default class IIIFImage extends Component {
   tiles() {
     const { url, scale, bounds, isVisible } = this.props;
     const { data } = this.state;
-
-    if (!data) return [];
 
     const result = [];
 
@@ -61,7 +77,7 @@ export default class IIIFImage extends Component {
       height: height,
     });
 
-    const { zoom: tileZoom, width: tileWidth, height: tileHeight } = this.bestTileWidthAndScaleFactor();
+    const { zoom: tileZoom, width: tileWidth, height: tileHeight, providedHeight } = this.bestTileWidthAndScaleFactor();
 
     for (var i = 0; i < Math.ceil(tileZoom * width / tileWidth); i++) {
       for (var j = 0; j < Math.ceil(tileZoom * height / tileHeight); j++) {
@@ -71,7 +87,6 @@ export default class IIIFImage extends Component {
         // last in the row
         if (i === Math.floor(tileZoom * width / tileWidth)) {
           actualTileWidth = Math.ceil(tileZoom * width) - i * tileWidth;
-
         }
 
         // last in the column
@@ -89,7 +104,7 @@ export default class IIIFImage extends Component {
         if (isVisible(tileBounds)) {
           result.push({
             key: `${x},${y}`,
-            src: `${url}/${x},${y},${x_width},${y_height}/${actualTileWidth},${actualTileHeight}/0/default.jpg`,
+            src: `${url}/${x},${y},${x_width},${y_height}/${actualTileWidth},${this.isLevel1(['sizeByWh']) && !providedHeight ? '' : actualTileHeight}/0/default.jpg`,
             x: x,
             y: y,
             width: x_width,
@@ -102,7 +117,45 @@ export default class IIIFImage extends Component {
     return result;
   }
 
+  isLevel0(orSupports = []) {
+    const { data: { profile } } = this.state;
+
+    if (typeof profile === "string" ) return profile.match(/level0/);
+
+    return this.supports(orSupports);
+  }
+
+  isLevel1(orSupports = []) {
+    const { data: { profile } } = this.state;
+
+    if (typeof profile === "string" ) return profile.match(/level1/);
+
+    return this.supports(orSupports);
+  }
+
+  isLevel2(orSupports = []) {
+    const { data: { profile } } = this.state;
+
+    if (typeof profile === "string" ) return profile.match(/level2/);
+
+    return this.supports(orSupports);
+  }
+
+  supports(expected) {
+    const { data: { profile } } = this.state;
+
+    if (typeof profile === "string" ) return undefined;
+
+    const { supports } = profile;
+
+    return expected.every((e) => supports.includes(e));
+  }
+
   render() {
+    const { data } = this.state;
+    if (!data) return <Fragment></Fragment>;
+    if (this.isLevel0()) return <URLImage src={`${url}/full/full/0/default.jpg`} />
+
     return (
       this.tiles().map((tile) => {
         return <URLImage {...tile} />;
