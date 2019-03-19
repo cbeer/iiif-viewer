@@ -16,7 +16,7 @@ export default class extends Component {
 
   isVisible = (offset = { x: 0, y: 0}) => {
     return (obj) => {
-      const { dimensions, width, height } = this.props;
+      const { width, height } = this.props;
       const { x, y, scale } = this.state;
 
       return ((x - offset.x) <= obj.x2 &&
