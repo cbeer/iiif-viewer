@@ -1,6 +1,7 @@
 import React, {Component, Fragment} from 'react'
 import { Stage, Layer, Rect, Image } from 'react-konva';
 import debounce from 'lodash/debounce';
+import { Motion, spring } from 'react-motion';
 import IIIFImage from './iiifimage';
 
 export default class extends Component {
@@ -10,7 +11,8 @@ export default class extends Component {
       x: props.x || 0,
       y: props.y || 0,
       scale: 0.1,
-      rotation: 0,
+      rotation: props.rotation,
+      immediate: false,
     };
   }
 
@@ -31,7 +33,7 @@ export default class extends Component {
     const stage = e.currentTarget;
 
     var oldScale = stage.scaleX();
-    var scaleBy = 1.03;
+    var scaleBy = 1.04;
 
     var mousePointTo = {
       x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
@@ -59,6 +61,7 @@ export default class extends Component {
       x: -1 * newPos.x / newScale,
       y: -1 * newPos.y / newScale,
       scale: newScale,
+      immediate: true,
     });
   }
 
@@ -77,17 +80,22 @@ export default class extends Component {
 
   render() {
     const { url, width, height } = this.props;
-    const { x, y, rotation, scale } = this.state;
+    const { x, y, rotation, scale, immediate } = this.state;
 
     return (
-      <Stage rotation={rotation} x={-1 * x * scale} y={-1 * y * scale} scaleX={scale} scaleY={scale} onWheel={this.handleWheel} onDragEnd={this.handleDragEnd} draggable width={width} height={height}>
-        <Layer>
-          <IIIFImage scale={scale} isVisible={this.isVisible()} url={url} />
-        </Layer>
-        <Layer offsetX={-2700}>
-          <IIIFImage scale={scale} isVisible={this.isVisible({ x: 2700, y: 0 })} url={url} />
-        </Layer>
-      </Stage>
+      <Motion style={{
+        rotation: immediate ? rotation : spring(rotation),
+        x: immediate ? x : spring(x),
+        y: immediate ? y : spring(y)
+      }}>
+        {motion =>
+          <Stage rotation={motion.rotation} x={-1 * motion.x * scale} y={-1 * motion.y * scale} scaleX={scale} scaleY={scale} onWheel={this.handleWheel} onDragEnd={this.handleDragEnd} draggable width={width} height={height}>
+            <Layer name={url}>
+              <IIIFImage scale={scale} isVisible={this.isVisible()} url={url} />
+            </Layer>
+          </Stage>
+        }
+      </Motion>
     );
   }
 }

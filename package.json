@@ -23,7 +23,8 @@
     "axios": "^0.18.0",
     "konva": "^3.2.0",
     "lodash": "^4.17.11",
-    "react-konva": "^16.8.4"
+    "react-konva": "^16.8.4",
+    "react-motion": "^0.5.2"
   },
   "peerDependencies": {
     "react": "16.x"
