@@ -31,8 +31,8 @@ export default class IIIFImage extends Component {
     const { scale } = this.props;
     const { data: { tiles } } = this.state;
 
-    const scaleFactors = [...tiles.map(e => e.scaleFactors)]
-    const bestScaleFactor = scaleFactors.sort((a, b) => (a < b)).find(f => (1/f > scale));
+    const scaleFactors = [].concat(...tiles.map(e => e.scaleFactors)).sort((a, b) => (a < b))
+    const bestScaleFactor = scaleFactors.find(f => (1/f > scale));
     const bestTile = tiles.find(f => f.scaleFactors.includes(bestScaleFactor)) || {};
 
     return {
