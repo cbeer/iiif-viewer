@@ -60,6 +60,14 @@ export default class IIIFImage extends Component {
     };
   }
 
+  baseImage() {
+    const { url } = this.props;
+    const { data: { sizes } } = this.state;
+
+    const prettyGoodSize = sizes.sort((a,b) => a.width * a.height < b.width * b.height ).find((s) => s.width * s.height < 1048576)
+    return `${url}/full/${prettyGoodSize ? prettyGoodSize.width : 400},/0/default.jpg`
+  }
+
   tiles() {
     const { url, scale, bounds, isVisible } = this.props;
     const { data } = this.state;
@@ -70,7 +78,7 @@ export default class IIIFImage extends Component {
 
     result.push({
       key: 'base',
-      src: `${url}/full/400,/0/default.jpg`,
+      src: this.baseImage(),
       x: 0,
       y: 0,
       width: width,
